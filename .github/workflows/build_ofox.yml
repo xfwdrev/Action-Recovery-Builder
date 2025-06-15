@@ -38,7 +38,7 @@ on:
       OFOX_VERSION:
         description: OFOX Version
         required: true
-        default: 'R11.1_1_A14-Stable'
+        default: 'R11.3_0_A14-Stable'
 
 jobs:
   build:
