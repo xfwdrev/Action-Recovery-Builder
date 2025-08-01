@@ -14,7 +14,7 @@ on:
       DEVICE_TREE_URL:
         description: Device Tree URL
         required: true
-        default: 'https://github.com/saadelasfur/android_device_samsung_m52xq.git'
+        default: 'https://github.com/ExtremeXT/android_device_samsung_exynos990.git'
       DEVICE_TREE_BRANCH:
         description: Device Tree Branch
         required: true
@@ -22,15 +22,15 @@ on:
       DEVICE_PATH:
         description: Device Path
         required: true
-        default: 'device/samsung/m52xq'
+        default: 'device/samsung/exynos990'
       DEVICE_NAME:
         description: Device Name
         required: true
-        default: 'm52xq'
+        default: 'x1s'
       MAKEFILE_NAME:
         description: Makefile Name
         required: true
-        default: 'twrp_m52xq'
+        default: 'twrp_x1s'
       BUILD_TARGET:
         description: Build Target
         required: true
