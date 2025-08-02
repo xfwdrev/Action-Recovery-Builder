@@ -2,43 +2,6 @@ name: Build TWRP
 
 on:
   workflow_dispatch:
-    inputs:
-      MANIFEST_URL:
-        description: Manifest URL
-        required: true
-        default: 'https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git'
-      MANIFEST_BRANCH:
-        description: Manifest Branch
-        required: true
-        default: 'twrp-12.1'
-      DEVICE_TREE_URL:
-        description: Device Tree URL
-        required: true
-        default: 'https://github.com/xfwdrev/android_device_samsung_exynos2100.git'
-      DEVICE_TREE_BRANCH:
-        description: Device Tree Branch
-        required: true
-        default: 'android-12.1'
-      DEVICE_PATH:
-        description: Device Path
-        required: true
-        default: 'device/samsung/exynos2100'
-      DEVICE_NAME:
-        description: Device Name
-        required: true
-        default: 'o1s'
-      MAKEFILE_NAME:
-        description: Makefile Name
-        required: true
-        default: 'twrp_o1s'
-      BUILD_TARGET:
-        description: Build Target
-        required: true
-        default: 'recovery'
-      TWRP_VERSION:
-        description: TWRP Version
-        required: true
-        default: '3.7.1_12'
 
 jobs:
   build:
@@ -51,19 +14,6 @@ jobs:
       matrix:
         target: [o1s, p3s, r9s, t2s]
     steps:
-    - name: Display Run Parameters
-      run: |
-        echo "::group::User Environment Variables"
-        echo "Manifest URL: ${{ github.event.inputs.MANIFEST_URL }}"
-        echo "Manifest Branch: ${{ github.event.inputs.MANIFEST_BRANCH }}"
-        echo "Device Tree URL: ${{ github.event.inputs.DEVICE_TREE_URL }}"
-        echo "Device Tree Branch: ${{ github.event.inputs.DEVICE_TREE_BRANCH }}"
-        echo "Device Path: ${{ github.event.inputs.DEVICE_PATH }}"
-        echo "Device Name: ${{ github.event.inputs.DEVICE_NAME }}"
-        echo "Makefile Name: ${{ github.event.inputs.MAKEFILE_NAME }}"
-        echo "Build Target: ${{ github.event.inputs.BUILD_TARGET }}.img"
-        echo "TWRP Version: ${{ github.event.inputs.TWRP_VERSION }}"
-        echo "::endgroup::"
 
     - name: Check Out
       uses: actions/checkout@v4
@@ -142,8 +92,8 @@ jobs:
     - name: Archive the files
       run: |
         ls -a ${{ steps.pwd.outputs.workspace-folder }}/out/target/product/ && echo
-        ls -a ${{ steps.pwd.outputs.workspace-folder }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/ && echo
-        cd out/target/product/${{ github.event.inputs.DEVICE_NAME }}
+        ls -a ${{ steps.pwd.outputs.workspace-folder }}/out/target/product/${{ matrix.target }}/ && echo
+        cd out/target/product/${{ matrix.target }}
         mv recovery.img twrp-3.7.1_12-0-${{ matrix.target }}.img
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
