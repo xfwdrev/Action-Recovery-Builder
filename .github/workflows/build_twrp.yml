@@ -46,6 +46,10 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [x1s, y2s, z3s, c1s, c2s, r8s]
     steps:
     - name: Display Run Parameters
       run: |
@@ -101,9 +105,9 @@ jobs:
         mkdir workspace
         cd workspace
         echo "workspace-folder=$(pwd)" >> $GITHUB_OUTPUT
-        git config --global user.name "Saad"
-        git config --global user.email "saadelasfur@gmail.com"
-        repo init --depth=1 -u ${{ github.event.inputs.MANIFEST_URL }} -b ${{ github.event.inputs.MANIFEST_BRANCH }}
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
       id: pwd
 
     - name: Repo Sync
@@ -113,7 +117,7 @@ jobs:
 
     - name: Clone device tree
       run: |
-        git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
+        git clone https://github.com/ExtremeXT/android_device_samsung_exynos990.git -b android-12.1 ./device/samsung/exynos990
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
     - name: Set Swap Space
@@ -125,7 +129,7 @@ jobs:
       run: |
         export ALLOW_MISSING_DEPENDENCIES=true
         source build/envsetup.sh
-        lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng && make clean && mka ${{ github.event.inputs.BUILD_TARGET }}image -j$(nproc --all)
+        lunch twrp_${{ matrix.target }}-eng && make clean && mka recoveryimage -j$(nproc --all)
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
     - name: Set Date Variables
@@ -140,21 +144,19 @@ jobs:
         ls -a ${{ steps.pwd.outputs.workspace-folder }}/out/target/product/ && echo
         ls -a ${{ steps.pwd.outputs.workspace-folder }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/ && echo
         cd out/target/product/${{ github.event.inputs.DEVICE_NAME }}
-        tar -cvf twrp-${{ github.event.inputs.TWRP_VERSION }}-0-${{ github.event.inputs.DEVICE_NAME }}.img.tar ${{ github.event.inputs.BUILD_TARGET }}.img
-        mv ${{ github.event.inputs.BUILD_TARGET }}.img twrp-${{ github.event.inputs.TWRP_VERSION }}-0-${{ github.event.inputs.DEVICE_NAME }}.img
+        mv recovery.img twrp-3.7.1_12-0-${{ matrix.target }}.img
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
     - name: Upload to Release
       uses: softprops/action-gh-release@v2
       with:
         files: | 
-          workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/twrp-${{ github.event.inputs.TWRP_VERSION }}-0-${{ github.event.inputs.DEVICE_NAME }}.img
-          workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/twrp-${{ github.event.inputs.TWRP_VERSION }}-0-${{ github.event.inputs.DEVICE_NAME }}.img.tar
-        name: twrp-${{ github.event.inputs.DEVICE_NAME }}-${{ steps.date.outputs.DATE_SHORT }}
+          workspace/out/target/product/${{ matrix.target }}/twrp-3.7.1_12-0-${{ matrix.target }}.img
+        name: twrp-${{ matrix.target }}-${{ steps.date.outputs.DATE_SHORT }}
         tag_name: ${{ steps.date.outputs.DATE_TAG }}
         body: |
-          Manifest: ${{ github.event.inputs.MANIFEST_BRANCH }}
-          Device: ${{ github.event.inputs.DEVICE_NAME }}
-          Target: ${{ github.event.inputs.BUILD_TARGET }}
+          Manifest: twrp-12.1
+          Device: ${{ matrix.target }}
+          Target: recovery
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
