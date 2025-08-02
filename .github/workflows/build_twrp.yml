@@ -14,7 +14,7 @@ on:
       DEVICE_TREE_URL:
         description: Device Tree URL
         required: true
-        default: 'https://github.com/ExtremeXT/android_device_samsung_exynos990.git'
+        default: 'https://github.com/xfwdrev/android_device_samsung_exynos2100.git'
       DEVICE_TREE_BRANCH:
         description: Device Tree Branch
         required: true
@@ -22,15 +22,15 @@ on:
       DEVICE_PATH:
         description: Device Path
         required: true
-        default: 'device/samsung/exynos990'
+        default: 'device/samsung/exynos2100'
       DEVICE_NAME:
         description: Device Name
         required: true
-        default: 'x1s'
+        default: 'o1s'
       MAKEFILE_NAME:
         description: Makefile Name
         required: true
-        default: 'twrp_x1s'
+        default: 'twrp_o1s'
       BUILD_TARGET:
         description: Build Target
         required: true
@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [x1s, y2s, z3s, c1s, c2s, r8s]
+        target: [o1s, p3s, r9s, t2s]
     steps:
     - name: Display Run Parameters
       run: |
@@ -117,7 +117,7 @@ jobs:
 
     - name: Clone device tree
       run: |
-        git clone https://github.com/ExtremeXT/android_device_samsung_exynos990.git -b android-12.1 ./device/samsung/exynos990
+        git clone https://github.com/xfwdrev/android_device_samsung_exynos2100.git -b android-12.1 ./device/samsung/exynos2100
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
     - name: Set Swap Space
