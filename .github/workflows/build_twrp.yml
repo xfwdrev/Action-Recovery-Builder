@@ -94,7 +94,10 @@ jobs:
         ls -a ${{ steps.pwd.outputs.workspace-folder }}/out/target/product/ && echo
         ls -a ${{ steps.pwd.outputs.workspace-folder }}/out/target/product/${{ matrix.target }}/ && echo
         cd out/target/product/${{ matrix.target }}
-        mv recovery.img twrp-3.7.1_12-0-${{ matrix.target }}.img
+        IMG_NAME="twrp-3.7.1_12-0-${{ matrix.target }}.img"
+        TAR_NAME="twrp-3.7.1_12-0-${{ matrix.target }}.tar"
+        cp recovery.img "$IMG_NAME"
+        tar -cvf "$TAR_NAME" recovery.img
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
     - name: Upload to Release
@@ -102,6 +105,7 @@ jobs:
       with:
         files: | 
           workspace/out/target/product/${{ matrix.target }}/twrp-3.7.1_12-0-${{ matrix.target }}.img
+          workspace/out/target/product/${{ matrix.target }}/twrp-3.7.1_12-0-${{ matrix.target }}.tar
         name: twrp-${{ matrix.target }}-${{ steps.date.outputs.DATE_SHORT }}
         tag_name: ${{ steps.date.outputs.DATE_TAG }}
         body: |
